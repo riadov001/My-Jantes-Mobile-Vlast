@@ -1,11 +1,15 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "node:http";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import authRoutes from "./auth";
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://myjantes.mytoolsgroup.eu";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Proxy all /api/* requests to the external backend
+  // Local auth routes (register, login, oauth, user, logout)
+  app.use("/api/auth", authRoutes);
+
+  // Proxy other /api/* requests to the external backend
   const apiProxy = createProxyMiddleware({
     target: BACKEND_URL,
     changeOrigin: true,

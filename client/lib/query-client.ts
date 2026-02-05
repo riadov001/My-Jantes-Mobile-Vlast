@@ -6,20 +6,29 @@ import { Platform } from "react-native";
  * @returns {string} The API base URL
  */
 export function getApiUrl(): string {
-  // If we are on web, we can use a relative URL or the public domain
+  // For web, construct URL to backend port
   if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined') {
+      const currentHost = window.location.hostname;
+      const protocol = window.location.protocol;
+      
+      // In development (localhost), use the backend port directly
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        return 'http://localhost:5000/';
+      }
+      
+      // In Replit, access port 5000 via the same hostname
+      return `${protocol}//${currentHost}:5000/`;
+    }
     return '/';
   }
 
-  // For native, we use the configured domain
+  // For native, we use the configured domain pointing to backend
   const host = process.env.EXPO_PUBLIC_DOMAIN;
-
   if (!host) {
-    // Fallback for development if domain is not set
     return 'http://localhost:5000/';
   }
 
-  // Ensure the URL ends with a slash
   const url = host.startsWith('http') ? host : `https://${host}`;
   return url.endsWith('/') ? url : `${url}/`;
 }
