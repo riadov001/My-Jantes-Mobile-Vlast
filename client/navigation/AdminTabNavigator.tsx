@@ -46,6 +46,8 @@ export default function AdminTabNavigator() {
           }),
           borderTopWidth: 0,
           elevation: 0,
+          height: Platform.OS === 'ios' ? 88 : 60,
+          paddingBottom: Platform.OS === 'ios' ? 30 : 10,
         },
         tabBarBackground: () =>
           Platform.OS === 'ios' ? (
