@@ -1,19 +1,27 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { Platform } from "react-native";
 
 /**
  * Gets the base URL for the Express API server (e.g., "http://localhost:3000")
  * @returns {string} The API base URL
  */
 export function getApiUrl(): string {
-  let host = process.env.EXPO_PUBLIC_DOMAIN;
-
-  if (!host) {
-    throw new Error("EXPO_PUBLIC_DOMAIN is not set");
+  // If we are on web, we can use a relative URL or the public domain
+  if (Platform.OS === 'web') {
+    return '/';
   }
 
-  let url = new URL(`https://${host}`);
+  // For native, we use the configured domain
+  const host = process.env.EXPO_PUBLIC_DOMAIN;
 
-  return url.href;
+  if (!host) {
+    // Fallback for development if domain is not set
+    return 'http://localhost:5000/';
+  }
+
+  // Ensure the URL ends with a slash
+  const url = host.startsWith('http') ? host : `https://${host}`;
+  return url.endsWith('/') ? url : `${url}/`;
 }
 
 async function throwIfResNotOk(res: Response) {
@@ -29,7 +37,9 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   const baseUrl = getApiUrl();
-  const url = new URL(route, baseUrl);
+  // Remove leading slash from route if baseUrl ends with one
+  const cleanRoute = route.startsWith('/') ? route.slice(1) : route;
+  const url = new URL(cleanRoute, baseUrl);
 
   const res = await fetch(url, {
     method,
@@ -49,7 +59,9 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const baseUrl = getApiUrl();
-    const url = new URL(queryKey.join("/") as string, baseUrl);
+    const route = queryKey.join("/");
+    const cleanRoute = route.startsWith('/') ? route.slice(1) : route;
+    const url = new URL(cleanRoute, baseUrl);
 
     const res = await fetch(url, {
       credentials: "include",
