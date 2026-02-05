@@ -134,23 +134,23 @@ export default function QuoteDetailScreen() {
               <View style={styles.itemInfo}>
                 <ThemedText type="body">{item.description}</ThemedText>
                 <ThemedText type="small" style={{ color: theme.textSecondary }}>
-                  {item.quantity} x {item.unitPrice?.toFixed(2) || '0.00'} €
+                  {item.quantity} x {Number(item.unitPrice || 0).toFixed(2)} €
                 </ThemedText>
               </View>
               <ThemedText type="body" style={{ fontWeight: '600' }}>
-                {((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)} €
+                {(Number(item.quantity || 0) * Number(item.unitPrice || 0)).toFixed(2)} €
               </ThemedText>
             </View>
           ))}
           <View style={styles.totalSection}>
             <View style={styles.totalRow}>
               <ThemedText type="body">Total HT</ThemedText>
-              <ThemedText type="body">{quote.totalHT?.toFixed(2) || '0.00'} €</ThemedText>
+              <ThemedText type="body">{Number(quote.totalHT || 0).toFixed(2)} €</ThemedText>
             </View>
             <View style={styles.totalRow}>
               <ThemedText type="h3">Total TTC</ThemedText>
               <ThemedText type="h3" style={{ color: theme.primary }}>
-                {quote.totalTTC?.toFixed(2) || '0.00'} €
+                {Number(quote.totalTTC || 0).toFixed(2)} €
               </ThemedText>
             </View>
           </View>

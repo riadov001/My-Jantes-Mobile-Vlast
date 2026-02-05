@@ -245,7 +245,7 @@ function QuotePreviewCard({ quote }: { quote: Quote }) {
         {quote.vehicleBrand} {quote.vehicleModel}
       </ThemedText>
       <ThemedText type="body" style={[styles.amount, { color: theme.primary }]}>
-        {quote.totalTTC?.toFixed(2) || '0.00'} €
+        {Number(quote.totalTTC || 0).toFixed(2)} €
       </ThemedText>
     </Card>
   );
@@ -268,7 +268,7 @@ function InvoicePreviewCard({ invoice }: { invoice: Invoice }) {
         Échéance: {new Date(invoice.dueDate).toLocaleDateString('fr-FR')}
       </ThemedText>
       <ThemedText type="body" style={[styles.amount, { color: theme.primary }]}>
-        {invoice.amount?.toFixed(2) || '0.00'} €
+        {Number(invoice.amount || 0).toFixed(2)} €
       </ThemedText>
     </Card>
   );

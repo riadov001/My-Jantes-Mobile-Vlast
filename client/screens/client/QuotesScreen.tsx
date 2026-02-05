@@ -81,7 +81,7 @@ export default function QuotesScreen() {
             Total TTC
           </ThemedText>
           <ThemedText type="h3" style={{ color: theme.primary }}>
-            {item.totalTTC?.toFixed(2) || '0.00'} €
+            {Number(item.totalTTC || 0).toFixed(2)} €
           </ThemedText>
         </View>
         <Feather name="chevron-right" size={24} color={theme.textSecondary} />

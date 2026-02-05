@@ -103,7 +103,7 @@ export default function InvoicesScreen() {
               Montant
             </ThemedText>
             <ThemedText type="h3" style={{ color: isOverdue ? theme.error : theme.primary }}>
-              {item.amount?.toFixed(2) || '0.00'} €
+              {Number(item.amount || 0).toFixed(2)} €
             </ThemedText>
           </View>
           <Feather name="chevron-right" size={24} color={theme.textSecondary} />

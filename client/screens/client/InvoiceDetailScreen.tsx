@@ -86,7 +86,7 @@ export default function InvoiceDetailScreen() {
             type="h1"
             style={{ color: isOverdue ? theme.error : isPaid ? theme.success : theme.primary }}
           >
-            {invoice.amount?.toFixed(2) || '0.00'} €
+            {Number(invoice.amount || 0).toFixed(2)} €
           </ThemedText>
         </Card>
 
