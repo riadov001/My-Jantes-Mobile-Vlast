@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { View, ScrollView, StyleSheet, RefreshControl, Pressable } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -17,8 +18,9 @@ import { Feather } from '@expo/vector-icons';
 export default function AdminDashboardScreen() {
   const { theme } = useTheme();
   const { user } = useAuth();
+  const navigation = useNavigation<any>();
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
 
   const { data: analytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useAdminAnalytics();
   const { data: quotes, isLoading: quotesLoading, refetch: refetchQuotes } = useAdminQuotes();
@@ -49,7 +51,7 @@ export default function AdminDashboardScreen() {
         <ScrollView
           contentContainerStyle={[
             styles.scrollContent,
-            { paddingTop: headerHeight + Spacing.lg, paddingBottom: tabBarHeight + Spacing.xl }
+            { paddingTop: headerHeight + Spacing.lg, paddingBottom: insets.bottom + Spacing.xl + 60 }
           ]}
         >
           <View style={styles.statsGrid}>
@@ -70,7 +72,7 @@ export default function AdminDashboardScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: headerHeight + Spacing.lg, paddingBottom: tabBarHeight + Spacing.xl }
+          { paddingTop: headerHeight + Spacing.lg, paddingBottom: insets.bottom + Spacing.xl + 60 }
         ]}
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={handleRefresh} tintColor={theme.primary} />
@@ -101,27 +103,33 @@ export default function AdminDashboardScreen() {
         </View>
 
         <View style={styles.statsGrid}>
-          <StatCard
-            label="Devis en attente"
-            value={String(pendingQuotes)}
-            icon="file-text"
-            color={theme.primary}
-          />
-          <StatCard
-            label="Factures à payer"
-            value={String(pendingInvoices)}
-            icon="credit-card"
-            color={theme.warning}
-          />
+          <Pressable style={{ flex: 1 }} onPress={() => navigation.navigate('AdminQuotesTab')}>
+            <StatCard
+              label="Devis en attente"
+              value={String(pendingQuotes)}
+              icon="file-text"
+              color={theme.primary}
+            />
+          </Pressable>
+          <Pressable style={{ flex: 1 }} onPress={() => navigation.navigate('AdminInvoicesTab')}>
+            <StatCard
+              label="Factures à payer"
+              value={String(pendingInvoices)}
+              icon="credit-card"
+              color={theme.warning}
+            />
+          </Pressable>
         </View>
 
         <View style={styles.statsGrid}>
-          <StatCard
-            label="RDV en attente"
-            value={String(pendingReservations)}
-            icon="calendar"
-            color={theme.info}
-          />
+          <Pressable style={{ flex: 1 }} onPress={() => navigation.navigate('AdminMoreTab', { screen: 'AdminReservations' })}>
+            <StatCard
+              label="RDV en attente"
+              value={String(pendingReservations)}
+              icon="calendar"
+              color={theme.info}
+            />
+          </Pressable>
           <StatCard
             label="Taux conversion"
             value={analytics?.conversionRate || '0%'}
