@@ -100,4 +100,11 @@ export function setupPwaProxy(app: Express) {
   
   app.post('/api/admin/services', (req, res) => proxyRequest(req, res, 'POST', '/api/admin/services'));
   app.patch('/api/admin/services/:id', (req, res) => proxyRequest(req, res, 'PATCH', `/api/admin/services/${req.params.id}`));
+  
+  // Chat/Conversations endpoints
+  app.get('/api/conversations', (req, res) => proxyRequest(req, res, 'GET', '/api/conversations'));
+  app.post('/api/conversations', (req, res) => proxyRequest(req, res, 'POST', '/api/conversations'));
+  app.get('/api/conversations/:id', (req, res) => proxyRequest(req, res, 'GET', `/api/conversations/${req.params.id}`));
+  app.get('/api/conversations/:id/messages', (req, res) => proxyRequest(req, res, 'GET', `/api/conversations/${req.params.id}/messages`));
+  app.post('/api/conversations/:id/messages', (req, res) => proxyRequest(req, res, 'POST', `/api/conversations/${req.params.id}/messages`));
 }
