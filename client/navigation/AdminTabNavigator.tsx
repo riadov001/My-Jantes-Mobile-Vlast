@@ -8,6 +8,7 @@ import AdminDashboardScreen from '@/screens/admin/AdminDashboardScreen';
 import AdminQuotesScreen from '@/screens/admin/AdminQuotesScreen';
 import AdminInvoicesScreen from '@/screens/admin/AdminInvoicesScreen';
 import AdminReservationsScreen from '@/screens/admin/AdminReservationsScreen';
+import AdminServicesScreen from '@/screens/admin/AdminServicesScreen';
 import AdminMoreScreen from '@/screens/admin/AdminMoreScreen';
 import { HeaderTitle } from '@/components/HeaderTitle';
 import { useTheme } from '@/hooks/useTheme';
@@ -16,6 +17,7 @@ export type AdminTabParamList = {
   AdminQuotesTab: undefined;
   AdminInvoicesTab: undefined;
   AdminReservationsTab: undefined;
+  AdminServicesTab: undefined;
   AdminMoreTab: undefined;
 };
 
