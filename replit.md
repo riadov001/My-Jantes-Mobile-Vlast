@@ -100,6 +100,16 @@ npm run server:dev  # Backend Express (port 5000)
 ## Changements Récents
 
 ### Février 2026
+- **Espace Administrateur Complet**:
+  - Dashboard avec analytics (CA, taux conversion, devis/factures/réservations en attente)
+  - Gestion des devis (création, modification, suppression, envoi)
+  - Gestion des factures (création, paiement, envoi email)
+  - Gestion des réservations (validation, annulation)
+  - Gestion des utilisateurs (liste, modification des rôles)
+  - Gestion des services (création, modification, activation/désactivation)
+  - Chat interne avec clients
+  - Notifications admin
+- Navigation automatique admin/client basée sur le rôle utilisateur
 - Connexion au backend PWA (appmytools.replit.app) via proxy local
 - Authentification par email/mot de passe avec session cookies
 - Parité complète des fonctionnalités avec la PWA
