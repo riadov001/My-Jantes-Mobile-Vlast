@@ -47,7 +47,7 @@ export default function AdminChatScreen() {
   const fetchConversations = async () => {
     try {
       const baseUrl = getApiUrl();
-      const response = await fetch(`${baseUrl}api/conversations`, { credentials: 'include' });
+      const response = await fetch(`${baseUrl}api/local/conversations`, { credentials: 'include' });
       if (response.ok) {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
@@ -72,7 +72,7 @@ export default function AdminChatScreen() {
   const fetchMessages = async (conversationId: string) => {
     try {
       const baseUrl = getApiUrl();
-      const response = await fetch(`${baseUrl}api/conversations/${conversationId}/messages`, { credentials: 'include' });
+      const response = await fetch(`${baseUrl}api/local/conversations/${conversationId}/messages`, { credentials: 'include' });
       if (response.ok) {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
@@ -137,7 +137,7 @@ export default function AdminChatScreen() {
 
     setSending(true);
     try {
-      const response = await apiRequest('POST', `/api/conversations/${selectedConversation.id}/messages`, {
+      const response = await apiRequest('POST', `/api/local/conversations/${selectedConversation.id}/messages`, {
         content: newMessage.trim()
       });
       if (response.ok) {
@@ -153,7 +153,7 @@ export default function AdminChatScreen() {
 
   const handleStartConversation = async (userId: string) => {
     try {
-      const response = await apiRequest('POST', '/api/conversations', {
+      const response = await apiRequest('POST', '/api/local/conversations', {
         participantId: userId
       });
       if (response.ok) {
@@ -258,7 +258,7 @@ export default function AdminChatScreen() {
     );
   }
 
-  const clients = users?.filter(u => u.role === 'client') || [];
+  const authorizedUsers = users?.filter(u => u.id !== user?.id && (u.role === 'admin' || u.role === 'superadmin' || u.role === 'employee')) || [];
 
   return (
     <ThemedView style={styles.container}>
@@ -268,11 +268,11 @@ export default function AdminChatScreen() {
           { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + Spacing.xl }
         ]}
       >
-        {conversations.length === 0 && clients.length === 0 ? (
+        {conversations.length === 0 && authorizedUsers.length === 0 ? (
           <EmptyState
             image={require('../../../assets/images/empty-quotes.png')}
             title="Aucune conversation"
-            description="Les conversations avec les clients apparaîtront ici"
+            description="Les conversations avec l'équipe apparaîtront ici"
           />
         ) : (
           <>
@@ -315,24 +315,26 @@ export default function AdminChatScreen() {
               </>
             )}
 
-            {clients.length > 0 && (
+            {authorizedUsers.length > 0 && (
               <>
                 <ThemedText style={styles.sectionTitle}>Démarrer une conversation</ThemedText>
-                {clients.map((client) => (
-                  <Pressable key={client.id} onPress={() => handleStartConversation(client.id)}>
+                {authorizedUsers.map((u) => (
+                  <Pressable key={u.id} onPress={() => handleStartConversation(u.id)}>
                     <Card style={styles.conversationCard}>
-                      <View style={[styles.avatar, { backgroundColor: theme.info }]}>
+                      <View style={[styles.avatar, { backgroundColor: u.role === 'employee' ? theme.info : theme.primary }]}>
                         <ThemedText style={styles.avatarText}>
-                          {(client.firstName?.charAt(0) || client.email.charAt(0)).toUpperCase()}
+                          {(u.firstName?.charAt(0) || u.email.charAt(0)).toUpperCase()}
                         </ThemedText>
                       </View>
                       <View style={styles.conversationInfo}>
                         <ThemedText style={styles.conversationName}>
-                          {client.firstName || ''} {client.lastName || ''}
+                          {u.firstName || ''} {u.lastName || ''}
                         </ThemedText>
-                        <ThemedText style={styles.lastMessage}>{client.email}</ThemedText>
+                        <ThemedText style={styles.lastMessage}>
+                          {u.role === 'superadmin' ? 'Super Admin' : u.role === 'admin' ? 'Admin' : 'Employé'}
+                        </ThemedText>
                       </View>
-                      <Feather name="message-circle" size={20} color={theme.textSecondary} />
+                      <Feather name="plus" size={20} color={theme.textSecondary} />
                     </Card>
                   </Pressable>
                 ))}
