@@ -150,4 +150,57 @@ export function setupPwaProxy(app: Express) {
   
   // Push notification token registration
   app.post('/api/push-token', (req, res) => proxyRequest(req, res, 'POST', '/api/push-token'));
+
+  // Google Calendar API proxy
+  app.post('/api/calendar/events', async (req, res) => {
+    try {
+      const { accessToken, event } = req.body;
+      if (!accessToken || !event) {
+        return res.status(400).json({ message: 'Token et événement requis' });
+      }
+
+      const response = await fetch(
+        'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(event),
+        }
+      );
+
+      const data = await response.json();
+      res.status(response.status).json(data);
+    } catch (error) {
+      console.error('Calendar API error:', error);
+      res.status(500).json({ message: 'Erreur Calendar API' });
+    }
+  });
+
+  app.get('/api/calendar/events', async (req, res) => {
+    try {
+      const accessToken = req.headers.authorization?.replace('Bearer ', '');
+      if (!accessToken) {
+        return res.status(401).json({ message: 'Token requis' });
+      }
+
+      const timeMin = req.query.timeMin || new Date().toISOString();
+      const response = await fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&singleEvents=true&orderBy=startTime`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      res.status(response.status).json(data);
+    } catch (error) {
+      console.error('Calendar API error:', error);
+      res.status(500).json({ message: 'Erreur Calendar API' });
+    }
+  });
 }

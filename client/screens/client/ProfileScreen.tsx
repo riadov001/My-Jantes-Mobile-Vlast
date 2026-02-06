@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Switch, Alert, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, Switch, Alert, Platform, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -16,6 +16,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications, useMarkAllNotificationsRead } from '@/hooks/useApi';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useGoogleCalendar } from '@/hooks/useGoogleCalendar';
 import { Spacing, BorderRadius } from '@/constants/theme';
 
 export default function ProfileScreen() {
@@ -28,6 +29,13 @@ export default function ProfileScreen() {
   const { data: notifications, refetch: refetchNotifications } = useNotifications();
   const markAllRead = useMarkAllNotificationsRead();
   const { isEnabled: pushEnabled, toggleNotifications, permissionStatus } = usePushNotifications();
+  const {
+    isConnected: calendarConnected,
+    isLoading: calendarLoading,
+    connectCalendar,
+    disconnectCalendar,
+    isConfigured: calendarConfigured,
+  } = useGoogleCalendar();
 
   const unreadCount = notifications?.filter(n => !n.isRead).length || 0;
 
@@ -178,6 +186,67 @@ export default function ProfileScreen() {
           </Card>
         </View>
 
+        {calendarConfigured ? (
+          <View style={styles.section}>
+            <ThemedText type="h4" style={styles.sectionTitle}>
+              Google Calendar
+            </ThemedText>
+            <Card style={StyleSheet.flatten([styles.menuCard, { backgroundColor: theme.backgroundDefault }])}>
+              <View style={styles.menuItem}>
+                <View style={styles.menuItemLeft}>
+                  <View style={[styles.menuIcon, { backgroundColor: calendarConnected ? `${theme.success}15` : `${theme.info}15` }]}>
+                    <Feather name="calendar" size={20} color={calendarConnected ? theme.success : theme.info} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <ThemedText type="body">Synchronisation calendrier</ThemedText>
+                    <ThemedText type="small" style={{ color: theme.textSecondary }}>
+                      {calendarConnected
+                        ? 'Connecté - vos RDV se synchronisent'
+                        : 'Ajoutez vos RDV à Google Calendar'}
+                    </ThemedText>
+                  </View>
+                </View>
+                {calendarLoading ? (
+                  <ActivityIndicator size="small" color={theme.info} />
+                ) : (
+                  <Pressable
+                    onPress={async () => {
+                      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                      if (calendarConnected) {
+                        Alert.alert(
+                          'Déconnecter Google Calendar',
+                          'Voulez-vous déconnecter votre Google Calendar ?',
+                          [
+                            { text: 'Annuler', style: 'cancel' },
+                            { text: 'Déconnecter', style: 'destructive', onPress: disconnectCalendar },
+                          ]
+                        );
+                      } else {
+                        connectCalendar();
+                      }
+                    }}
+                    style={[
+                      styles.calendarConnectButton,
+                      {
+                        backgroundColor: calendarConnected ? `${theme.error}15` : `${theme.info}15`,
+                        borderColor: calendarConnected ? theme.error : theme.info,
+                      },
+                    ]}
+                    testID="button-calendar-connect"
+                  >
+                    <ThemedText
+                      type="small"
+                      style={{ color: calendarConnected ? theme.error : theme.info, fontWeight: '600' }}
+                    >
+                      {calendarConnected ? 'Déconnecter' : 'Connecter'}
+                    </ThemedText>
+                  </Pressable>
+                )}
+              </View>
+            </Card>
+          </View>
+        ) : null}
+
         <View style={styles.section}>
           <ThemedText type="h4" style={styles.sectionTitle}>
             À propos
@@ -279,6 +348,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '700',
+  },
+  calendarConnectButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
   },
   logoutButton: {
     marginTop: Spacing.lg,
