@@ -186,9 +186,11 @@ function configureExpoAndLanding(app: express.Application) {
 
     if (legalPages[req.path]) {
       const legalPath = path.resolve(process.cwd(), "server", "templates", legalPages[req.path]);
-      const legalHtml = fs.readFileSync(legalPath, "utf-8");
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      return res.status(200).send(legalHtml);
+      if (fs.existsSync(legalPath)) {
+        const legalHtml = fs.readFileSync(legalPath, "utf-8");
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.status(200).send(legalHtml);
+      }
     }
 
     if (req.path !== "/" && req.path !== "/manifest") {
@@ -207,30 +209,6 @@ function configureExpoAndLanding(app: express.Application) {
         landingPageTemplate,
         appName,
       });
-    }
-
-    if (req.path === "/garanties") {
-      const p = path.resolve(process.cwd(), "server", "templates", "garanties.html");
-      if (fs.existsSync(p)) {
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        return res.send(fs.readFileSync(p, "utf-8"));
-      }
-    }
-
-    if (req.path === "/confidentialite") {
-      const p = path.resolve(process.cwd(), "server", "templates", "confidentialite.html");
-      if (fs.existsSync(p)) {
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        return res.send(fs.readFileSync(p, "utf-8"));
-      }
-    }
-
-    if (req.path === "/cgv") {
-      const p = path.resolve(process.cwd(), "server", "templates", "cgv.html");
-      if (fs.existsSync(p)) {
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        return res.send(fs.readFileSync(p, "utf-8"));
-      }
     }
 
     next();
