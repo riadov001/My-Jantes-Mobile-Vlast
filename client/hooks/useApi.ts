@@ -2,10 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest, getApiUrl } from '@/lib/query-client';
 import { Quote, Invoice, Reservation, Notification, Service, Analytics, User, Garage } from '@/types';
 
+const POLLING_INTERVAL = 30000;
+const FAST_POLLING_INTERVAL = 10000;
+
 // Client API hooks
 export function useQuotes() {
   return useQuery<Quote[]>({
     queryKey: ['/api/quotes'],
+    refetchInterval: POLLING_INTERVAL,
   });
 }
 
@@ -19,6 +23,7 @@ export function useQuote(id: string) {
 export function useInvoices() {
   return useQuery<Invoice[]>({
     queryKey: ['/api/invoices'],
+    refetchInterval: POLLING_INTERVAL,
   });
 }
 
@@ -32,6 +37,7 @@ export function useInvoice(id: string) {
 export function useReservations() {
   return useQuery<Reservation[]>({
     queryKey: ['/api/reservations'],
+    refetchInterval: POLLING_INTERVAL,
   });
 }
 
@@ -64,6 +70,7 @@ export function useCancelReservation() {
 export function useNotifications() {
   return useQuery<Notification[]>({
     queryKey: ['/api/notifications'],
+    refetchInterval: FAST_POLLING_INTERVAL,
   });
 }
 
@@ -145,6 +152,7 @@ export function useAdminAnalytics(params?: { startDate?: string; endDate?: strin
 export function useAdminQuotes() {
   return useQuery<Quote[]>({
     queryKey: ['/api/admin/quotes'],
+    refetchInterval: POLLING_INTERVAL,
   });
 }
 
@@ -207,6 +215,7 @@ export function useGenerateInvoice() {
 export function useAdminInvoices() {
   return useQuery<Invoice[]>({
     queryKey: ['/api/admin/invoices'],
+    refetchInterval: POLLING_INTERVAL,
   });
 }
 
@@ -268,6 +277,7 @@ export function useSendInvoiceEmail() {
 export function useAdminReservations() {
   return useQuery<Reservation[]>({
     queryKey: ['/api/admin/reservations'],
+    refetchInterval: POLLING_INTERVAL,
   });
 }
 
@@ -300,6 +310,7 @@ export function useUpdateReservation() {
 export function useAdminUsers() {
   return useQuery<User[]>({
     queryKey: ['/api/admin/users'],
+    refetchInterval: POLLING_INTERVAL,
   });
 }
 
