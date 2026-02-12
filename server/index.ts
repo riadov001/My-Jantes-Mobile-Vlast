@@ -180,8 +180,11 @@ function configureExpoAndLanding(app: express.Application) {
 
     const legalPages: Record<string, string> = {
       '/garanties': 'garanties.html',
+      '/garanties/': 'garanties.html',
       '/confidentialite': 'confidentialite.html',
+      '/confidentialite/': 'confidentialite.html',
       '/cgv': 'cgv.html',
+      '/cgv/': 'cgv.html',
     };
 
     if (legalPages[req.path]) {
